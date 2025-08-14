@@ -2,7 +2,7 @@
 
 namespace ApiProject.WebUI.ViewComponents
 {
-    public class _AboutDashboardDefaultComponentPartial:ViewComponent
+    public class _AboutDefaultComponentPartial:ViewComponent
     {
         public IViewComponentResult Invoke()
         {
