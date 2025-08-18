@@ -22,7 +22,7 @@ namespace ApiProject.WebApi.Context
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Testimonial> Testimonials { get; set; }
-
+        public DbSet<YummyEvent> YummyEvents{ get; set; }
         //Migration İÇİN: 
         //  paket yönetim konsolu açılır
         //  add-migration mig1 ->komutu yazılır ve migration dosayası böylece oluşturulmuş olur
