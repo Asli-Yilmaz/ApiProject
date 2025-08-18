@@ -1,0 +1,39 @@
+[
+  {
+    "title": "Doðum Günü Kutlamasý",
+    "description": "Sevdiklerinizle birlikte özel süslemeler ve kiþiye özel menüler eþliðinde doðum gününüzü kutlayabilirsiniz.",
+    "imageUrl": "test",
+    "status": true,
+    "price": 1500
+  },
+  {
+    "title": "Þirket Toplantý Yemeði",
+    "description": "Özel hazýrlanmýþ toplantý salonumuzda, profesyonel sunum ekipmanlarý ve özel menülerle iþ yemeklerinizi organize edebilirsiniz.",
+    "imageUrl": "test",
+    "status": true,
+    "price": 3000
+  },
+  {
+    "title": "Yýl Dönümü Yemeði",
+    "description": "Romantik bir atmosferde çiftlere özel masa düzeni ve menü seçenekleriyle yýl dönümlerinizi unutulmaz kýlýyoruz.",
+    "imageUrl": "test",
+    "status": true,
+    "price": 1200
+  },
+  {
+    "title": "Mezuniyet Kutlamasý",
+    "description": "Kalabalýk gruplara uygun özel menüler ve müzik eþliðinde mezuniyetinizi doyasýya kutlayýn.",
+    "imageUrl": "test",
+    "status": true,
+    "price": 2500
+  },
+  {
+    "title": "Niþan Töreni",
+    "description": "Özel süslemeler, canlý müzik ve zengin menü seçenekleriyle niþan töreninizi þýk bir þekilde gerçekleþtirebilirsiniz.",
+    "imageUrl": "test",
+    "status": true,
+    "price": 5000
+  }
+]
+
+
