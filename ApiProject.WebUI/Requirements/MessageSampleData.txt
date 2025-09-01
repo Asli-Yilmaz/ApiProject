@@ -1,0 +1,82 @@
+[
+  {
+    "nameSurname": "Ahmet Demir",
+    "email": "ahmet.demir@example.com",
+    "subject": "Rezervasyon Talebi",
+    "messageDetails": "Merhaba, 5 Eylül akþamý 4 kiþilik masa ayýrtmak istiyoruz. Müsaitlik durumunu öðrenebilir miyim?",
+    "sendDate": "2025-08-28T19:30:00",
+    "isRead": true
+  },
+  {
+    "nameSurname": "Elif Yýldýz",
+    "email": "elif.yildiz@example.com",
+    "subject": "Menü Hakkýnda Soru",
+    "messageDetails": "Glütensiz seçenekleriniz var mý? Özellikle tatlýlarda merak ediyorum.",
+    "sendDate": "2025-08-29T14:45:00",
+    "isRead": false
+  },
+  {
+    "nameSurname": "Mehmet Kaya",
+    "email": "mehmet.kaya@example.com",
+    "subject": "Þikayet",
+    "messageDetails": "Geçen hafta restoranýnýza geldik. Servis oldukça yavaþ ilerledi, bu konuda geri dönüþ yapabilir misiniz?",
+    "sendDate": "2025-08-27T21:15:00",
+    "isRead": true
+  },
+  {
+    "nameSurname": "Zeynep Çelik",
+    "email": "zeynep.celik@example.com",
+    "subject": "Doðum Günü Organizasyonu",
+    "messageDetails": "Kardeþimin doðum günü için 15 kiþilik kutlama yapmak istiyoruz. Pasta ve süsleme hizmetiniz mevcut mu?",
+    "sendDate": "2025-08-30T11:10:00",
+    "isRead": true
+  },
+  {
+    "nameSurname": "Burak Þahin",
+    "email": "burak.sahin@example.com",
+    "subject": "Ýþ Toplantýsý Ýçin Rezervasyon",
+    "messageDetails": "Özel toplantý salonunuz var mý? 10 kiþilik bir iþ yemeði düzenlemek istiyoruz.",
+    "sendDate": "2025-08-31T16:20:00",
+    "isRead": false
+  },
+  {
+    "nameSurname": "Ayþe Aydýn",
+    "email": "ayse.aydin@example.com",
+    "subject": "Öneri",
+    "messageDetails": "Menünüze daha fazla vegan seçenek eklemenizi çok isterim. Böylece daha sýk gelebiliriz.",
+    "sendDate": "2025-08-25T18:00:00",
+    "isRead": true
+  },
+  {
+    "nameSurname": "Canan Güneþ",
+    "email": "canan.gunes@example.com",
+    "subject": "Çalýþma Saatleri",
+    "messageDetails": "Hafta sonlarý sabah kahvaltýsý için hangi saatlerde açýlýyorsunuz?",
+    "sendDate": "2025-08-29T09:40:00",
+    "isRead": false
+  },
+  {
+    "nameSurname": "Murat Özkan",
+    "email": "murat.ozkan@example.com",
+    "subject": "Teþekkür",
+    "messageDetails": "Geçen akþam yemeðimiz çok keyifli geçti. Garsonunuz Mehmet Bey’e ayrýca teþekkür ederiz.",
+    "sendDate": "2025-08-26T22:25:00",
+    "isRead": true
+  },
+  {
+    "nameSurname": "Selin Karaca",
+    "email": "selin.karaca@example.com",
+    "subject": "Paket Servis",
+    "messageDetails": "Restoranýnýzda paket servis veya online sipariþ seçeneði mevcut mu?",
+    "sendDate": "2025-08-31T13:00:00",
+    "isRead": false
+  },
+  {
+    "nameSurname": "Emre Yýlmaz",
+    "email": "emre.yilmaz@example.com",
+    "subject": "Canlý Müzik",
+    "messageDetails": "Canlý müzik olan günleriniz var mý? Özellikle Cuma veya Cumartesi akþamlarýný öðrenmek isterim.",
+    "sendDate": "2025-08-28T17:35:00",
+    "isRead": true
+  }
+]
