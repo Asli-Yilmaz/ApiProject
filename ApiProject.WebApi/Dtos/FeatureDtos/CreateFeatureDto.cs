@@ -1,6 +1,6 @@
 ﻿namespace ApiProject.WebApi.Dtos.FeatureDtos
 {
-    public class CreateFutureDto
+    public class CreateFeatureDto
     {
         public string Title { get; set; }
         public string Subtitle { get; set; }

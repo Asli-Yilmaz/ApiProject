@@ -26,7 +26,7 @@ namespace ApiProject.WebApi.Controllers
 
         }
         [HttpPost]
-        public IActionResult CreateFeature(CreateFutureDto createFutureDto)
+        public IActionResult CreateFeature(CreateFeatureDto createFutureDto)
         {
             var value = _mapper.Map<Feature>(createFutureDto);
             _context.Features.Add(value);
