@@ -30,6 +30,7 @@ namespace ApiProject.WebApi.Controllers
         {
             var value = _mapper.Map<Feature>(createFutureDto);
             _context.Features.Add(value);
+            _context.SaveChanges();
             return Ok("Ekleme işlemi başarılı");
         }
         [HttpDelete]

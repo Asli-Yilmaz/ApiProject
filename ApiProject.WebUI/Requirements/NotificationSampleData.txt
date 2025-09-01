@@ -1,0 +1,32 @@
+[
+  {
+    "description": "Rezervasyonunuz onaylandý.",
+    "iconUrl": "/icons/check.png",
+    "notificationDate": "2025-09-01T10:15:00Z",
+    "isRead": true
+  },
+  {
+    "description": "Yeni menüye 3 tatlý eklendi.",
+    "iconUrl": "/icons/menu.png",
+    "notificationDate": "2025-09-01T09:30:00Z",
+    "isRead": false
+  },
+  {
+    "description": "Canlý müzik etkinliði bu Cuma!",
+    "iconUrl": "/icons/music.png",
+    "notificationDate": "2025-08-31T18:45:00Z",
+    "isRead": true
+  },
+  {
+    "description": "Sipariþiniz yola çýktý.",
+    "iconUrl": "/icons/delivery.png",
+    "notificationDate": "2025-09-01T11:40:00Z",
+    "isRead": false
+  },
+  {
+    "description": "Sadakat kartýnýzda 1 puan kazandýnýz.",
+    "iconUrl": "/icons/gift.png",
+    "notificationDate": "2025-08-30T14:20:00Z",
+    "isRead": true
+  }
+]

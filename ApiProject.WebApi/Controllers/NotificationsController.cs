@@ -30,6 +30,7 @@ namespace ApiProject.WebApi.Controllers
         {
             var value = _mapper.Map<Notification>(createNotificationDto);
             _context.Notifications.Add(value);
+            _context.SaveChanges();
             return Ok("Ekleme işlemi başarılı");
         }
         [HttpDelete]
