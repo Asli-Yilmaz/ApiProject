@@ -27,6 +27,11 @@ namespace ApiProject.WebUI.Controllers
             }
             return View();
         }
+        [HttpGet]
+        public IActionResult CreateCategory()
+        {
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CreateCategoryDto createCategoryDto) 
         {
