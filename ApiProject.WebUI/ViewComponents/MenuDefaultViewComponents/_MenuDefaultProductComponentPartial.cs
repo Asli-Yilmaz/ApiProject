@@ -19,7 +19,7 @@ namespace ApiProject.WebUI.ViewComponents.MenuDefaultViewComponents
             if (responseMessage.IsSuccessStatusCode)
             {
                 var values= await responseMessage.Content.ReadAsStringAsync();
-                var jsonData = JsonConvert.DeserializeObject<List<ResultProductDtos>>(values);
+                var jsonData = JsonConvert.DeserializeObject<List<ResultProductDto>>(values);
                 return View(jsonData);
             }
             return View();

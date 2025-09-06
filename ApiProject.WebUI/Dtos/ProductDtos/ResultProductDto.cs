@@ -1,6 +1,6 @@
 ﻿namespace ApiProject.WebUI.Dtos.ProductDtos
 {
-    public class ResultProductDtos
+    public class ResultProductDto
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }
