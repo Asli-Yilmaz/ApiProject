@@ -1,19 +1,19 @@
-﻿@model CreateProductDto
+﻿@model GetProductByIdDto
 @{
-    ViewData["Title"] = "CreateProduct";
+    ViewData["Title"] = "UpdateProduct";
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
-
 <section class="section">
     <div class="section-body">
         <div class="row">
             <div class="col-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Yeni Ürün Ekle</h4>
+                        <h4>Ürün Güncelle</h4>
                     </div>
                     <div class="card-body">
                         <form method="post">
+                            <input type="hidden" asp-for="CategoryId" />
                             <label>Ürün Adı</label>
                             <input type="text" asp-for="ProductName" class="form-control" />
                             <br />
@@ -27,11 +27,9 @@
                             <input type="text" asp-for="ImageUrl" class="form-control" />
                             <br />
                             <label>Kategorisi</label>
-                            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.v">
-                                <option value="">--Kategori Seçiniz--</option>
-                            </select>
+                            <input type="text" asp-for="CategoryId" class="form-control" />
                             <br />
-                            <button class="btn btn-primary">Ürün Oluştur</button>
+                            <button class="btn btn-primary">Ürün Güncelle</button>
                         </form>
                     </div>
                 </div>
@@ -39,4 +37,3 @@
         </div>
     </div>
 </section>
-
