@@ -52,6 +52,7 @@ namespace ApiProject.WebApi.Controllers
         {
             var value = _mapper.Map<Feature>(updateFeatureDto);
             _context.Features.Update(value);
+            _context.SaveChanges();
             return Ok("Güncelleme işlemi başarılı");
         }
     }

@@ -45,6 +45,12 @@ namespace ApiProject.WebUI.Controllers
             return View();
 
         }
+        public async Task<IActionResult> DeleteFeature(int id)
+        {
+            var client= _httpClientFactory.CreateClient();
+            await client.DeleteAsync("https://localhost:7115/api/Features?id="+id);
+            return RedirectToAction("");
+        }
 
         [HttpGet]
         public async Task<IActionResult> UpdateFeature(int id)
@@ -61,7 +67,7 @@ namespace ApiProject.WebUI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(updateFeatureDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PutAsync("https://localhost:7115/api/Features", stringContent);
+            await client.PutAsync("https://localhost:7115/api/Features/", stringContent);
             return RedirectToAction("FeatureList");
         }
 

@@ -10,8 +10,8 @@
             <div class="col-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Öne Çıkan Alan İşlemleri</h4>                        
-                    </div> 
+                        <h4>Öne Çıkan Alan İşlemleri</h4>
+                    </div>
                     <div class="card-body">
                         <p class="card-text">Tema bütünlüğünün bozulmaması adına sadece 1 tane öne çıkan alan bilgisi eklenebilir</p>
                         <table class="table">
@@ -42,10 +42,15 @@
 
                             </tbody>
                         </table>
-                        @if(count==0){
+                        @if (count == 0)
+                        {
                             <a href="/Feature/CreateFeature/" class="btn btn-info">Yeni Feature Ekle</a>
                         }
-                        
+                        else
+                        {
+                            <a href="#" class="btn btn-info" onclick="return false">Feature Mevcut</a>
+                        }
+
                     </div>
                 </div>
             </div>
