@@ -58,6 +58,12 @@ namespace ApiProject.WebUI.Controllers
             return View();
 
         }
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            await client.DeleteAsync("https://localhost:7115/api/Products?id=" + id);
+            return RedirectToAction("ProductList");
+        }
 
         [HttpGet]
         public async Task<IActionResult> UpdateProduct(int id)
@@ -77,5 +83,7 @@ namespace ApiProject.WebUI.Controllers
             await client.PutAsync("https://localhost:7115/api/Products", stringContent);
             return RedirectToAction("ProductList");
         }
+
+
     }
 }

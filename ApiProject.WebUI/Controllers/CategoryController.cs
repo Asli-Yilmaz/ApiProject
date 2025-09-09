@@ -65,5 +65,11 @@ namespace ApiProject.WebUI.Controllers
             await client.PutAsync("https://localhost:7115/api/Categories",stringContent);
             return RedirectToAction("CategoryList");
         }
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            await client.DeleteAsync("https://localhost:7115/api/Categories?id=" + id);
+            return RedirectToAction("CategoryList");
+        }
     }
 }

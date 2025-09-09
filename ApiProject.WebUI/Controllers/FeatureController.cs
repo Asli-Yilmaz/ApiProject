@@ -49,7 +49,7 @@ namespace ApiProject.WebUI.Controllers
         {
             var client= _httpClientFactory.CreateClient();
             await client.DeleteAsync("https://localhost:7115/api/Features?id="+id);
-            return RedirectToAction("");
+            return RedirectToAction("FeatureList");
         }
 
         [HttpGet]
