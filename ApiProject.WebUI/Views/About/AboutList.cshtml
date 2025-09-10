@@ -1,0 +1,56 @@
+﻿@model List<ResultAboutDto>
+@{
+    ViewData["Title"] = "AboutList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Hakkımızda Alanı İşlemleri</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Başlık</th>
+                                    <th scope="col">Açıklama</th>
+                                    <th scope="col">Güncelle</th>
+                                    <th scope="col">Sil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <td>@item.Title</td>
+                                        <td>@item.Description</td>
+                                        <td><a href="/About/UpdateAbout/@item.Aboutid" class="btn btn-success" />Güncelle</td>
+                                        <td><a href="/About/DeleteAbout/@item.Aboutid" class="btn btn-danger" />Sil</td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                        @if (count == 0)
+                        {
+                            <a href="/About/CreateAbout/" class="btn btn-info">Yeni Hakkında Alanı Ekle</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="btn btn-info" onclick="return false">Hakkında Alanı Mevcut</a>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
