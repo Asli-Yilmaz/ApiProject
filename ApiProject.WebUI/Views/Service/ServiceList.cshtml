@@ -1,0 +1,51 @@
+﻿@model List<ResultServiceDto>
+@{
+    ViewData["Title"] = "ServiceList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Why Choosee Yummy Sayfası İşlemleri</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Hizmet Adı</th>
+                                    <th scope="col">Hizmet Açıklaması</th>
+                                    <th scope="col">Güncelle</th>
+                                    <th scope="col">Sil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <th scope="row">@count</th>
+                                        <td>@item.ServiceTitle</td>
+                                        <td>@item.ServiceDescription</td>
+                                        <td><a href="/Service/UpdateService/@item.ServiceId" class="btn btn-success" />Güncelle</td>
+                                        <td><a href="/Service/DeleteService/@item.ServiceId" class="btn btn-danger" />Sil</td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                        <a href="/Service/CreateService/" class="btn btn-info">Yeni Hizmet Ekle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

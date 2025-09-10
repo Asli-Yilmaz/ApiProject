@@ -38,8 +38,6 @@ namespace ApiProject.WebApi.Controllers
             _context.SaveChanges();
             return Ok("Hizmet silme işlemi başarılı.");
         }
-        //bir controller içinde aynı attribute türünü birden fazla kullanamazsın hata verir bu yüzden bir ad(root) verilir
-        //[HttpGet] ->böyle olsaydı hata alınırdı
         [HttpGet("GetService")]
         public IActionResult GetService(int id)
         {
@@ -49,7 +47,6 @@ namespace ApiProject.WebApi.Controllers
         [HttpPut]
         public IActionResult UpdateService(Service service)
         {
-
             _context.Services.Update(service);
             _context.SaveChanges();
             return Ok("Hizmet güncelleme işlemi başarılı.");
