@@ -52,6 +52,7 @@ namespace ApiProject.WebApi.Controllers
         {
             var value = _mapper.Map<Reservation>(updateReservationDto);
             _context.Reservations.Update(value);
+            _context.SaveChanges();
             return Ok("Güncelleme işlemi başarılı");
         }
     }
