@@ -1,8 +1,8 @@
-﻿namespace ApiProject.WebApi.Dtos.ContactDtos
+﻿namespace ApiProject.WebUI.Dtos.ContactDtos
 {
-    //dto da id ile getirme, listeleme, güncelleme ve ekleme işlemleri yapılır silme işlemi yapılmaz
-    public class ResultContactDto
+    public class GetContactByIdDto
     {
+
         public int ContactId { get; set; }
         public string MapLocation { get; set; }
         public string Address { get; set; }
