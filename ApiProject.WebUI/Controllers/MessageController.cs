@@ -1,7 +1,9 @@
 ﻿using ApiProject.WebUI.Dtos.MessageDtos;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
+using static ApiProject.WebUI.Controllers.AIController;
 
 namespace ApiProject.WebUI.Controllers
 {
@@ -79,6 +81,35 @@ namespace ApiProject.WebUI.Controllers
             var responseMessage = await client.GetAsync("https://localhost:7115/api/Messages/GetMessage?id=" + id);
             var jsonData = await responseMessage.Content.ReadAsStringAsync();
             var value = JsonConvert.DeserializeObject<GetMessageByIdDto>(jsonData);
+            var prompt = value.MessageDetails;
+
+            var apiKey = "sk-proj-api-key";
+            using var client2 = new HttpClient();
+            client2.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var requestData = new
+            {
+                model = "gpt-4o-mini",
+                messages = new[]
+                {
+                    new { role = "system", content = "Sen bir restorana gelen müşteri yorumlarını cevaplayan bir asistansın. Müşteri yorumlarını, müşteri memnuniyetini gözterek detaylı ve mantıklı bir şekilde cevaplamalısın." +
+                    "Amacımız yüksek müşteri memnuniyeti sağlamak, sorunları çözmek ve müşterilere yardımcı olmak." },
+                    new { role = "user", content = prompt }
+                }
+            };
+
+            var response = await client2.PostAsJsonAsync("https://api.openai.com/v1/chat/completions", requestData);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<OpenAIResponse>();
+                ViewBag.answerAI = result.choices[0].message.content;
+            }
+            else
+            {
+                ViewBag.answerAI = $"Bir hata oluştu: {response.StatusCode}, detay: {response}";
+            }
             return View(value);
         }
     }
