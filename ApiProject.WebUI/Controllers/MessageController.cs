@@ -70,5 +70,16 @@ namespace ApiProject.WebUI.Controllers
             await client.DeleteAsync("https://localhost:7115/api/Messages?id=" + id);
             return RedirectToAction("MessageList");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AnswerMessageWithOpenAI(int id)
+        {
+
+            var client = _httpClientFactory.CreateClient();
+            var responseMessage = await client.GetAsync("https://localhost:7115/api/Messages/GetMessage?id=" + id);
+            var jsonData = await responseMessage.Content.ReadAsStringAsync();
+            var value = JsonConvert.DeserializeObject<GetMessageByIdDto>(jsonData);
+            return View(value);
+        }
     }
 }
