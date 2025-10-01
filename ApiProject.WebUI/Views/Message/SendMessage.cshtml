@@ -1,5 +1,5 @@
 ﻿@model CreateMessageDto
-<form asp-action="SendMessage" method="post" asp-controller="Message" class="form-control" data-aos="fade-up" data-aos-delay="600">
+<form asp-action="SendMessage" method="post" asp-controller="Message" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
     <div class="row gy-4">
 
         <div class="col-md-6">
@@ -19,7 +19,10 @@
         </div>
 
         <div class="col-md-12 text-center">
-            <button type="submit" class="btn btn-info">Mesajı Gönder</button>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your message has been sent. Thank you!</div>
+            <button type="submit" >Mesajı Gönder</button>
         </div>
 
     </div>
