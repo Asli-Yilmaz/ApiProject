@@ -149,7 +149,7 @@ namespace ApiProject.WebUI.Controllers
                 };
                 var toxicJson = System.Text.Json.JsonSerializer.Serialize(toxicRequestBody);
                 var toxicContent = new StringContent(toxicJson, Encoding.UTF8, "application/json");
-                var toxicResponse = await client.PostAsync("https:/api-inference.huggingface.co/models/unitary/toxic-bert",toxicContent);
+                var toxicResponse = await client.PostAsync("https://api-inference.huggingface.co/models/unitary/toxic-bert",toxicContent);
                 var toxicResponseString=await toxicResponse.Content.ReadAsStringAsync();
 
                 if (toxicResponseString.TrimStart().StartsWith("["))
