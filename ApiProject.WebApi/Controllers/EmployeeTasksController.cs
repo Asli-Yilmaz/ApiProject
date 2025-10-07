@@ -7,10 +7,10 @@ namespace ApiProject.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestimonialsController : ControllerBase
+    public class EmployeeTasksController : ControllerBase
     {
         private readonly ApiContext _context;
-        public TestimonialsController(ApiContext context)
+        public EmployeeTasksController(ApiContext context)
         {
             _context = context;
         }
@@ -18,41 +18,41 @@ namespace ApiProject.WebApi.Controllers
         //bu da program.cs dosyasına : builder.Services.AddDbContext<ApiContext>(); satırı eklenir.
 
         [HttpPost]
-        public IActionResult CreateCategory(Testimonial testimonial)
+        public IActionResult CreateCategory(EmployeeTask EmployeeTask)
         {
-            _context.Testimonials.Add(testimonial);
+            _context.EmployeeTasks.Add(EmployeeTask);
             _context.SaveChanges();
-            return Ok("Ekleme İşlemi Başarılı.");
+            return Ok("Referans Ekleme İşlemi Başarılı.");
         }
         [HttpGet]
-        public IActionResult ListTestimonial()
+        public IActionResult ListEmployeeTask()
         {
-            var values = _context.Testimonials.ToList();
+            var values = _context.EmployeeTasks.ToList();
             return Ok(values);
         }
         [HttpDelete]
         public IActionResult DeleteCategory(int id)
         {
-            var value = _context.Testimonials.Find(id);
-            _context.Testimonials.Remove(value);
+            var value = _context.EmployeeTasks.Find(id);
+            _context.EmployeeTasks.Remove(value);
             _context.SaveChanges();
-            return Ok("silme işlemi başarılı.");
+            return Ok("Referans silme işlemi başarılı.");
         }
         //bir controller içinde aynı attribute türünü birden fazla kullanamazsın hata verir bu yüzden bir ad(root) verilir
         //[HttpGet] ->böyle olsaydı hata alınırdı
-        [HttpGet("GetTestimonial")]
-        public IActionResult GetTestimonial(int id)
+        [HttpGet("GetEmployeeTask")]
+        public IActionResult GetEmployeeTask(int id)
         {
-            var value = _context.Testimonials.Find(id);
+            var value = _context.EmployeeTasks.Find(id);
             return Ok(value);
         }
         [HttpPut]
-        public IActionResult UpdateTestimonial(Testimonial testimonial)
+        public IActionResult UpdateEmployeeTask(EmployeeTask EmployeeTask)
         {
 
-            _context.Testimonials.Update(testimonial);
+            _context.EmployeeTasks.Update(EmployeeTask);
             _context.SaveChanges();
-            return Ok("güncelleme işlemi başarılı.");
+            return Ok("Referans güncelleme işlemi başarılı.");
 
         }
     }
