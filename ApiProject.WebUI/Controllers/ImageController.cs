@@ -26,6 +26,18 @@ namespace ApiProject.WebUI.Controllers
             }
             return View();
         }
+        public async Task<IActionResult> ImageListWithEdit()
+        {
+            var client = _httpClientFactory.CreateClient();
+            var responseMessage = await client.GetAsync("https://localhost:7115/api/Images");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var value = await responseMessage.Content.ReadAsStringAsync();
+                var jsonData = JsonConvert.DeserializeObject<List<ResultImageDto>>(value);
+                return View(jsonData);
+            }
+            return View();
+        }
         [HttpGet]
         public IActionResult CreateImage()
         {
@@ -40,7 +52,7 @@ namespace ApiProject.WebUI.Controllers
             var responseMessage = await client.PostAsync("https://localhost:7115/api/Images", stringContent);
             if (responseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("ImageList");
+                return RedirectToAction("ImageListWithEdit");
             }
             return View();
 
@@ -62,13 +74,13 @@ namespace ApiProject.WebUI.Controllers
             var jsonData = JsonConvert.SerializeObject(updateImageDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
             await client.PutAsync("https://localhost:7115/api/Images", stringContent);
-            return RedirectToAction("ImageList");
+            return RedirectToAction("ImageListWithEdit");
         }
         public async Task<IActionResult> DeleteImage(int id)
         {
             var client = _httpClientFactory.CreateClient();
             await client.DeleteAsync("https://localhost:7115/api/Images?id=" + id);
-            return RedirectToAction("ImageList");
+            return RedirectToAction("ImageListWithEdit");
         }
     }
 }
