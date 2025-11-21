@@ -27,6 +27,7 @@ namespace ApiProject.WebApi.Context
         public DbSet<About> Abouts{ get; set; }
         public DbSet<EmployeeTask> EmployeeTasks { get; set; }
         public DbSet<EmployeeTaskChef> EmployeeTaskChefs { get; set; }
+        public DbSet<GroupReservation> GroupReservations { get; set; }
         //Migration İÇİN: 
         //  paket yönetim konsolu açılır
         //  add-migration mig1 ->komutu yazılır ve migration dosayası böylece oluşturulmuş olur
