@@ -31,6 +31,7 @@
                             <th>Grup Başlığı</th>
                             <th>Yetkili Kişi</th>
                             <th>Rezervasyon Durumu</th>
+                            <th>Kişi Sayısı</th>
                             <th>Son İşlem Tarihi</th>
                             <th>Rezervasyon Tarihi</th>
                             <th>Öncelik</th>
@@ -53,6 +54,7 @@
                                         <div class="progress-bar bg-success" data-width="100%"></div>
                                     </div>
                                 </td>
+                                <td>@item.PersonCount</td>
                                 <td>@item.LastProcessDate.ToString("dd-MMM-yyyy")</td>
                                 <td>@item.ReservationDate.ToString("dd-MMM-yyyy")</td>
                                 <td>
