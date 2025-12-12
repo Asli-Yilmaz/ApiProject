@@ -3,49 +3,315 @@
     ViewData["Title"] = "ServiceList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
+
+    // Hizmet adına göre ikon seçen akıllı fonksiyon
+    string GetServiceIcon(string title)
+    {
+        var text = title?.ToLower() ?? "";
+        if (text.Contains("paket") || text.Contains("delivery") || text.Contains("teslimat")) return "fa-motorcycle";
+        if (text.Contains("wifi") || text.Contains("internet")) return "fa-wifi";
+        if (text.Contains("otopark") || text.Contains("park") || text.Contains("valet")) return "fa-parking";
+        if (text.Contains("catering") || text.Contains("yemek")) return "fa-utensils";
+        if (text.Contains("rezervasyon") || text.Contains("booking")) return "fa-calendar-check";
+        if (text.Contains("özel") || text.Contains("private") || text.Contains("vip")) return "fa-user-tie";
+        if (text.Contains("bar") || text.Contains("içki")) return "fa-cocktail";
+        if (text.Contains("müzik") || text.Contains("canlı")) return "fa-music";
+        if (text.Contains("çocuk") || text.Contains("oyun")) return "fa-child";
+        return "fa-concierge-bell"; // Varsayılan "Resepsiyon zili" ikonu
+    }
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<section class="section">
-    <div class="section-body">
+<style>
+    /* Ortak Değişkenler */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: white;
+        }
+
+    /* Tablo Yapısı */
+    .table-responsive {
+        padding: 1rem;
+    }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+            .soft-table thead th:first-child {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .soft-table thead th:last-child {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+            .soft-table tbody tr td {
+                padding: 1.25rem 1.5rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 1rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-left: 4px solid transparent;
+                }
+
+                .soft-table tbody tr td:last-child {
+                    border-top-right-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    border-right: 1px solid var(--border-soft);
+                }
+
+    /* İkon Kutusu - Turkuaz/Cyan Tema */
+    .service-icon-box {
+        width: 48px;
+        height: 48px;
+        background-color: #ecfeff; /* Açık Cyan */
+        color: #0891b2; /* Koyu Cyan */
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        border: 1px solid #cffafe;
+    }
+
+    /* Metin */
+    .desc-text {
+        color: #475569;
+        font-size: 0.95rem;
+        max-width: 500px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* === NET GÖRÜNEN BUTONLAR (Koyu İkonlu) === */
+    .action-btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    /* View - Mavi (Opsiyonel Eklendi) */
+    .btn-view {
+        background-color: #eff6ff;
+        color: #1e40af;
+        border-color: #bfdbfe;
+    }
+
+        .btn-view:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+    /* Edit - Turuncu */
+    .btn-edit {
+        background-color: #fff7ed;
+        color: #9a3412;
+        border-color: #fed7aa;
+    }
+
+        .btn-edit:hover {
+            background-color: #ea580c;
+            color: white;
+        }
+
+    /* Delete - Kırmızı */
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Why Choosee Yummy Sayfası İşlemleri</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-concierge-bell" style="color: #0891b2;"></i>
+                                Hizmet Listesi
+                            </h4>
+                            <div style="color: var(--text-medium); font-size: 0.95rem; margin-top: 4px;">
+                                Restoranın sunduğu hizmetleri yönetin
+                            </div>
+                        </div>
+                        <a href="/Service/CreateService/" class="btn-add-new">
+                            <i class="fas fa-plus"></i>
+                            <span>Yeni Hizmet Ekle</span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Hizmet Adı</th>
-                                    <th scope="col">Hizmet Açıklaması</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.ServiceTitle</td>
-                                        <td>@item.ServiceDescription</td>
-                                        <td><a href="/Service/UpdateService/@item.ServiceId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Service/DeleteService/@item.ServiceId" class="btn btn-danger" />Sil</td>
-
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 8%;">İkon</th>
+                                        <th style="width: 25%;">Hizmet Adı</th>
+                                        <th style="width: 45%;">Hizmet Açıklaması</th>
+                                        <th style="width: 17%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        count++;
+                                        string iconClass = GetServiceIcon(item.ServiceTitle);
 
-                            </tbody>
-                        </table>
-                        <a href="/Service/CreateService/" class="btn btn-info">Yeni Hizmet Ekle</a>
+                                        <tr>
+                                            <td style="text-align:center;">
+                                                <span style="font-weight: 700; color: #cbd5e1; font-size: 1.1rem;">@count</span>
+                                            </td>
+                                            <td>
+                                                <div class="service-icon-box">
+                                                    <i class="fas @iconClass"></i>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="font-weight: 700; font-size: 1.05rem; color: #1e293b;">@item.ServiceTitle</div>
+                                            </td>
+                                            <td>
+                                                <div class="desc-text" title="@item.ServiceDescription">
+                                                    @item.ServiceDescription
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="action-btn-group">
+                                                    <a href="/Service/UpdateService/@item.ServiceId" class="btn-action btn-edit" title="Güncelle">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a href="/Service/DeleteService/@item.ServiceId" class="btn-action btn-delete" title="Sil" onclick="return confirm('Bu hizmeti silmek istediğinize emin misiniz?');">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model.Count</strong> hizmet sunuluyor
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
+</div>

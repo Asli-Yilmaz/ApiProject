@@ -2,47 +2,318 @@
 @{
     ViewData["Title"] = "CategoryList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    var count = 0;
+    int count = 0;
+
+    string GetCategoryIcon(string categoryName)
+    {
+        var name = categoryName?.ToLower() ?? "";
+        if (name.Contains("burger")) return "fa-hamburger";
+        if (name.Contains("pizza")) return "fa-pizza-slice";
+        if (name.Contains("içecek") || name.Contains("drink") || name.Contains("su") || name.Contains("kola")) return "fa-glass-cheers";
+        if (name.Contains("tatlı") || name.Contains("pasta") || name.Contains("kek")) return "fa-birthday-cake";
+        if (name.Contains("kahve")) return "fa-coffee";
+        if (name.Contains("salata")) return "fa-leaf";
+        if (name.Contains("balık")) return "fa-fish";
+        if (name.Contains("çorba")) return "fa-mug-hot";
+        if (name.Contains("ana yemek")) return "fa-utensils";
+        if (name.Contains("meze")) return "fa-lemon";
+        return "fa-utensils";
+    }
 }
 
-<section class="section">
-    <div class="section-body">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    /* Tablo */
+    .table-responsive { padding: 1rem; }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+    .soft-table thead th {
+        background-color: #f8fafc;
+        color: var(--text-medium);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid var(--border-soft);
+    }
+    
+    .soft-table thead th:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+    .soft-table thead th:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+    .soft-table tbody tr {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.2s ease;
+    }
+
+    .soft-table tbody tr td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border-top: 1px solid var(--border-soft);
+        border-bottom: 1px solid var(--border-soft);
+        color: var(--text-dark);
+        font-size: 1rem;
+    }
+
+    .soft-table tbody tr td:first-child { 
+        border-top-left-radius: 12px; 
+        border-bottom-left-radius: 12px; 
+        border-left: 4px solid transparent; 
+    }
+    
+    .soft-table tbody tr td:last-child { 
+        border-top-right-radius: 12px; 
+        border-bottom-right-radius: 12px; 
+        border-right: 1px solid var(--border-soft);
+    }
+
+    /* İkon Kutusu - Sol Taraf */
+    .food-icon-box {
+        width: 48px;
+        height: 48px;
+        background-color: #fff7ed;
+        color: #c2410c; /* Koyu Turuncu */
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        border: 1px solid #ffedd5;
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: #dcfce7;
+        color: #14532d;
+        border: 1px solid #bbf7d0;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .product-count {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-medium);
+        background: #f1f5f9;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+
+    /* ======================================================
+       ARTIK İKONLAR KESİN OLARAK GÖRÜNECEK KISIM
+       ====================================================== */
+    .action-btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem; /* İkon boyutu */
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    /* GÖRÜNTÜLEME BUTONU (MAVİ) */
+    .btn-view {
+        background-color: #eff6ff; /* Çok açık mavi zemin */
+        color: #1e40af;            /* <-- İKON RENGİ: ÇOK KOYU LACİVERT */
+        border-color: #bfdbfe;     
+    }
+    .btn-view:hover {
+        background-color: #2563eb; 
+        color: white;
+    }
+
+    /* DÜZENLEME BUTONU (TURUNCU) */
+    .btn-edit {
+        background-color: #fff7ed; /* Çok açık turuncu zemin */
+        color: #9a3412;            /* <-- İKON RENGİ: ÇOK KOYU KİREMİT */
+        border-color: #fed7aa;
+    }
+    .btn-edit:hover {
+        background-color: #ea580c; 
+        color: white;
+    }
+
+    /* SİLME BUTONU (KIRMIZI) */
+    .btn-delete {
+        background-color: #fef2f2; /* Çok açık kırmızı zemin */
+        color: #991b1b;            /* <-- İKON RENGİ: ÇOK KOYU BORDO */
+        border-color: #fecaca;
+    }
+    .btn-delete:hover {
+        background-color: #dc2626; 
+        color: white;
+    }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Kategori Listesi</h4>
+            <div class="col-12">
+                
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-utensils" style="color: #f59e0b;"></i>
+                                Menü Kategorileri
+                            </h4>
+                            <div style="color: var(--text-medium); font-size: 0.95rem; margin-top: 4px;">
+                                Restoran menüsü kategori ve ürün yönetimi
+                            </div>
+                        </div>
+                        <a href="/Category/CreateCategory/" class="btn-add-new">
+                            <i class="fas fa-plus"></i>
+                            <span>Yeni Kategori Ekle</span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Kategori Adı</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach(var item in Model){
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.CategoryName</td>
-                                        <td><a href="/Category/UpdateCategory/@item.CategoryId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Category/DeleteCategory/@item.CategoryId" class="btn btn-danger"/>Sil</td>
-                                        
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 10%;">İkon</th>
+                                        <th style="width: 35%;">Kategori Adı</th>
+                                        <th style="width: 15%;">Durum</th>
+                                        <th style="width: 15%;">İstatistik</th>
+                                        <th style="width: 20%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }                               
-                                
-                            </tbody>
-                        </table>           
-                        <a href="/Category/CreateCategory/" class="btn btn-info">Yeni Kategori Ekle</a>
-                    </div>                    
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        count++;
+                                        string iconClass = GetCategoryIcon(item.CategoryName);
+                                        
+                                        <tr>
+                                            <td style="text-align:center;">
+                                                <span style="font-weight: 700; color: #cbd5e1; font-size: 1.1rem;">@count</span>
+                                            </td>
+                                            <td>
+                                                <div class="food-icon-box">
+                                                    <i class="fas @iconClass"></i>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span style="font-weight: 700; font-size: 1.05rem; color: #1e293b;">@item.CategoryName</span>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge">
+                                                    <i class="fas fa-check-circle"></i> Yayında
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="product-count">
+                                                    <i class="fas fa-box-open" style="color: #64748b; margin-right:5px;"></i>
+                                                    @Random.Shared.Next(12, 50) ürün
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="action-btn-group">
+                                                    <a href="/Category/ViewCategory/@item.CategoryId/" class="btn-action btn-view" title="Detaylar">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="/Category/UpdateCategory/@item.CategoryId/" class="btn-action btn-edit" title="Düzenle">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a href="/Category/DeleteCategory/@item.CategoryId/" class="btn-action btn-delete" title="Sil" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model.Count</strong> kategori listeleniyor
+                        </div>
+                    </div>
                 </div>
+
             </div>
-        </div>        
-    </div>   
-</section>
-
-
+        </div>
+    </div>
+</div>

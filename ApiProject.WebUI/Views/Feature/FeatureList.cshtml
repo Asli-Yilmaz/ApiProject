@@ -4,58 +4,385 @@
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
 }
-<section class="section">
-    <div class="section-body">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Ekleme Butonu (Aktif) */
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: white;
+        }
+
+    /* Ekleme Butonu (Pasif / Disabled) */
+    .btn-add-disabled {
+        background-color: #e2e8f0;
+        color: #94a3b8;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: not-allowed;
+        border: 1px solid #cbd5e1;
+    }
+
+    /* Tablo */
+    .table-responsive {
+        padding: 1rem;
+    }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+            .soft-table thead th:first-child {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .soft-table thead th:last-child {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+            .soft-table tbody tr td {
+                padding: 1.25rem 1.5rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 1rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-left: 4px solid transparent;
+                }
+
+                .soft-table tbody tr td:last-child {
+                    border-top-right-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    border-right: 1px solid var(--border-soft);
+                }
+
+    /* İkon Kutusu - Feature için Mavi/Mor tonları */
+    .feature-icon-box {
+        width: 48px;
+        height: 48px;
+        background-color: #f3e8ff; /* Açık Mor Zemin */
+        color: #7e22ce; /* Koyu Mor İkon */
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        border: 1px solid #e9d5ff;
+    }
+
+    /* Metin Stilleri */
+    .title-text {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.05rem;
+        display: block;
+    }
+
+    .subtitle-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+
+    .desc-text {
+        font-size: 0.9rem;
+        color: #475569;
+        line-height: 1.5;
+        max-width: 350px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Özel Uyarı Kutusu (Alert) */
+    .custom-alert {
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #1e3a8a;
+    }
+
+    .alert-icon {
+        width: 40px;
+        height: 40px;
+        background: #dbeafe;
+        color: #2563eb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    /* === NET GÖRÜNEN BUTONLAR (Copy-Paste from Previous) === */
+    .action-btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-view {
+        background-color: #eff6ff;
+        color: #1e40af; /* KOYU LACİVERT */
+        border-color: #bfdbfe;
+    }
+
+        .btn-view:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+    .btn-edit {
+        background-color: #fff7ed;
+        color: #9a3412; /* KOYU KİREMİT */
+        border-color: #fed7aa;
+    }
+
+        .btn-edit:hover {
+            background-color: #ea580c;
+            color: white;
+        }
+
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #991b1b; /* KOYU BORDO */
+        border-color: #fecaca;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Öne Çıkan Alan İşlemleri</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-star" style="color: #7e22ce;"></i>
+                                Öne Çıkanlar
+                            </h4>
+                            <div style="color: var(--text-medium); font-size: 0.95rem; margin-top: 4px;">
+                                Anasayfa öne çıkan alan yönetimi
+                            </div>
+                        </div>
+
+                        <div class="header-action">
+                            @if (Model.Count == 1)
+                            {
+                                <div class="btn-add-disabled" title="Maksimum kayıt sayısına ulaşıldı">
+                                    <i class="fas fa-ban"></i>
+                                    <span>Ekleme Kapalı</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <a href="/Feature/CreateFeature/" class="btn-add-new">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Yeni Feature Ekle</span>
+                                </a>
+                            }
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">Tema bütünlüğünün bozulmaması adına sadece 1 tane öne çıkan alan bilgisi eklenebilir</p>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Başlık</th>
-                                    <th scope="col">Alt Başlık</th>
-                                    <th scope="col">Açıklama</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.Title</td>
-                                        <td>@item.Subtitle</td>
-                                        <td>@item.Description</td>
-                                        <td><a href="/Feature/UpdateFeature/@item.FeatureId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Feature/DeleteFeature/@item.FeatureId" class="btn btn-danger" />Sil</td>
-
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 10%;">İkon</th>
+                                        <th style="width: 20%;">Başlık</th>
+                                        <th style="width: 20%;">Alt Başlık</th>
+                                        <th style="width: 25%;">Açıklama</th>
+                                        <th style="width: 20%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        count++;
+                                        <tr>
+                                            <td style="text-align:center;">
+                                                <span style="font-weight: 700; color: #cbd5e1; font-size: 1.1rem;">@count</span>
+                                            </td>
+                                            <td>
+                                                <div class="feature-icon-box">
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="title-text">@item.Title</span>
+                                            </td>
+                                            <td>
+                                                <span class="subtitle-text">
+                                                    <i class="fas fa-quote-left" style="font-size: 0.7rem; margin-right: 4px; opacity: 0.5;"></i>
+                                                    @item.Subtitle
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="desc-text" title="@item.Description">
+                                                    @item.Description
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="action-btn-group">
+                                                    <a href="/Feature/ViewFeature/@item.FeatureId/" class="btn-action btn-view" title="Görüntüle">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="/Feature/UpdateFeature/@item.FeatureId/" class="btn-action btn-edit" title="Düzenle">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a href="/Feature/DeleteFeature/@item.FeatureId/" class="btn-action btn-delete" title="Sil" onclick="return confirm('Bu feature kaydını silmek istediğinize emin misiniz?');">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
 
-                            </tbody>
-                        </table>
-                        @if (count == 0)
+                        @if (Model.Count == 1)
                         {
-                            <a href="/Feature/CreateFeature/" class="btn btn-info">Yeni Feature Ekle</a>
+                            <div class="custom-alert">
+                                <div class="alert-icon">
+                                    <i class="fas fa-info"></i>
+                                </div>
+                                <div>
+                                    <h6 style="margin: 0; font-weight: 700; color: #1e3a8a;">Sistem Bilgisi</h6>
+                                    <p style="margin: 0; font-size: 0.9rem; color: #3b82f6;">
+                                        Sistemde zaten aktif bir 'Öne Çıkan' alanı bulunmaktadır. Yeni bir tane eklemek için mevcut olanı düzenleyebilir veya silebilirsiniz.
+                                    </p>
+                                </div>
+                            </div>
                         }
-                        else
-                        {
-                            <a href="#" class="btn btn-info" onclick="return false">Feature Mevcut</a>
-                        }
+                    </div>
 
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model.Count</strong> kayıt listeleniyor
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
-
+</div>
