@@ -1,56 +1,366 @@
 ﻿@model List<ResultMessageDto>
 @{
-    ViewData["Title"] = "MessageList";
+    ViewData["Title"] = "Gelen Mesajlar";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
 }
 
-<section class="section">
-    <div class="section-body">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* === ORTAK TASARIM DEĞİŞKENLERİ === */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+        --theme-color: #0ea5e9; /* Sky Blue */
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Yeni Ekle Butonu */
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: white;
+        }
+
+    /* Tablo Yapısı */
+    .table-responsive {
+        padding: 1rem;
+    }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+            .soft-table thead th:first-child {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .soft-table thead th:last-child {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+            .soft-table tbody tr:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+            }
+
+            .soft-table tbody tr td {
+                padding: 1.25rem 1.5rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 0.95rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-left: 4px solid transparent;
+                }
+
+                .soft-table tbody tr td:last-child {
+                    border-top-right-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    border-right: 1px solid var(--border-soft);
+                }
+
+    /* === MESAJLAR İÇİN ÖZEL STİLLER (Sky Blue) === */
+
+    /* Gönderen Profili */
+    .sender-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .sender-avatar {
+        width: 42px;
+        height: 42px;
+        background-color: #e0f2fe; /* Light Sky */
+        color: #0284c7; /* Dark Sky */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        border: 1px solid #bae6fd;
+    }
+
+    .sender-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sender-name {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+
+    .sender-email {
+        font-size: 0.8rem;
+        color: var(--text-medium);
+    }
+
+    /* Konu Başlığı */
+    .subject-text {
+        font-weight: 600;
+        color: #334155;
+    }
+
+    /* Tarih */
+    .date-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #f1f5f9;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    /* Aksiyon Butonları */
+    .action-toolbar {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    /* AI/Oku Butonu */
+    .btn-ai-reply {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        border-color: #bae6fd;
+    }
+
+        .btn-ai-reply:hover {
+            background-color: #0284c7;
+            color: white;
+            box-shadow: 0 4px 6px rgba(2, 132, 199, 0.2);
+        }
+
+    /* Düzenle Butonu */
+    .btn-edit {
+        background-color: #f3f4f6;
+        color: #475569;
+    }
+
+        .btn-edit:hover {
+            background-color: #cbd5e1;
+            color: #1e293b;
+        }
+
+    /* Sil Butonu */
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #dc2626;
+        border-color: #fecaca;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Gelen Mesaj Listesi</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-envelope-open-text" style="color: var(--theme-color);"></i>
+                                Gelen Kutusu
+                            </h4>
+                            <div style="color: var(--text-medium); font-size: 0.95rem; margin-top: 4px;">
+                                Müşteri iletişim ve geri bildirim yönetimi
+                            </div>
+                        </div>
+
+                        <a href="/Message/CreateMessage/" class="btn-add-new">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Yeni Mesaj Oluştur</span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Gönderen</th>
-                                    <th scope="col">E-mail</th>
-                                    <th scope="col">Başlık</th>
-                                    <th scope="col">Tarih</th>
-                                    <th scope="col">Mesajı Aç</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <td>@count</td>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.Email</td>
-                                        <td>@item.Subject</td>      
-                                        <td>@item.SendDate.ToString("dd-MMM-yyyy")</td>      
-                                        <td><a href="/Message/AnswerMessageWithOpenAI/@item.MessageId" class="btn btn-info" />Mesajı Aç</td>
-                                        <td><a href="/Message/UpdateMessage/@item.MessageId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Message/DeleteMessage/@item.MessageId" class="btn btn-danger" />Sil</td>
-
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 30%;">Gönderen</th>
+                                        <th style="width: 30%;">Konu</th>
+                                        <th style="width: 15%;">Tarih</th>
+                                        <th style="width: 20%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        @foreach (var item in Model)
+                                        {
+                                            count++;
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <span style="font-weight: 700; color: #cbd5e1;">@count</span>
+                                                </td>
+                                                <td>
+                                                    <div class="sender-profile">
+                                                        <div class="sender-avatar">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <div class="sender-info">
+                                                            <span class="sender-name">@item.NameSurname</span>
+                                                            <span class="sender-email">@item.Email</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="subject-text">
+                                                        @item.Subject
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="date-badge">
+                                                        <i class="far fa-clock" style="font-size:0.8rem;"></i>
+                                                        @item.SendDate.ToString("dd MMM yyyy")
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="action-toolbar">
+                                                        <a href="/Message/AnswerMessageWithOpenAI/@item.MessageId" class="btn-icon btn-ai-reply" title="Oku & AI ile Cevapla">
+                                                            <i class="fas fa-wand-magic-sparkles"></i>
+                                                        </a>
 
-                            </tbody>
-                        </table>
-                        <a href="/Message/CreateMessage/" class="btn btn-info">Yeni Mesaj Ekle</a>
+                                                        <a href="/Message/UpdateMessage/@item.MessageId" class="btn-icon btn-edit" title="Düzenle">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+
+                                                        <a href="/Message/DeleteMessage/@item.MessageId" class="btn-icon btn-delete" title="Sil" onclick="return confirm('Bu mesajı silmek istediğinize emin misiniz?');">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-medium);">
+                                                <i class="fas fa-inbox fa-3x" style="margin-bottom: 1rem; color: #cbd5e1;"></i>
+                                                <br />
+                                                Gelen kutunuz şu anda boş.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model.Count</strong> mesaj bulundu
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
+</div>

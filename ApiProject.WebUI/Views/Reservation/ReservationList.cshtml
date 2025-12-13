@@ -1,64 +1,407 @@
 ﻿@model List<ResultReservationDto>
 @{
-    ViewData["Title"] = "ReservationList";
+    ViewData["Title"] = "Rezervasyon Listesi";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
+
+    // Duruma Göre Renk ve İkon Belirleyici Fonksiyon
+    string GetStatusClass(string status)
+    {
+        status = status?.ToLower() ?? "";
+        if (status.Contains("onay")) return "status-success";
+        if (status.Contains("iptal")) return "status-danger";
+        if (status.Contains("bekle")) return "status-warning";
+        return "status-secondary";
+    }
+
+    string GetStatusIcon(string status)
+    {
+        status = status?.ToLower() ?? "";
+        if (status.Contains("onay")) return "fa-check-circle";
+        if (status.Contains("iptal")) return "fa-times-circle";
+        if (status.Contains("bekle")) return "fa-clock";
+        return "fa-circle-question";
+    }
 }
 
-<section class="section">
-    <div class="section-body">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* === ORTAK TASARIM DEĞİŞKENLERİ === */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Tablo Yapısı */
+    .table-responsive {
+        padding: 1rem;
+    }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+            .soft-table thead th:first-child {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .soft-table thead th:last-child {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+            .soft-table tbody tr:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+            }
+
+            .soft-table tbody tr td {
+                padding: 1.25rem 1.5rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 0.95rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-left: 4px solid transparent;
+                }
+
+                .soft-table tbody tr td:last-child {
+                    border-top-right-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    border-right: 1px solid var(--border-soft);
+                }
+
+    /* === REZERVASYON ÖZEL STİLLERİ === */
+
+    /* Tarih Kutusu */
+    .date-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .date-main {
+        font-weight: 700;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .date-sub {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+        margin-left: 20px; /* İkon hizası */
+    }
+
+    /* Durum Badgeleri */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .status-success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .status-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    .status-secondary {
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Aksiyon Butonları Grubu */
+    .action-toolbar {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        background: #f8fafc;
+        padding: 6px;
+        border-radius: 12px;
+        width: fit-content;
+        margin: 0 auto;
+        border: 1px solid var(--border-soft);
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    /* Renk Kodları */
+    .btn-approve {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+        .btn-approve:hover {
+            background-color: #22c55e;
+            color: white;
+        }
+
+    .btn-cancel {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+        .btn-cancel:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+    .btn-hold {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+        .btn-hold:hover {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+    .btn-edit {
+        background-color: #e0f2fe;
+        color: #075985;
+    }
+
+        .btn-edit:hover {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+    .btn-delete {
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+
+        .btn-delete:hover {
+            background-color: #374151;
+            color: white;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Rezervasyon Listesi</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-calendar-check" style="color: #0d9488;"></i>
+                                Rezervasyon Listesi
+                            </h4>
+                        </div>
+
+                        <div style="font-size: 0.9rem; color: var(--text-medium);">
+                            <span class="badge" style="background: #ecfdf5; color:#047857;">Onaylanan</span>
+                            <span class="badge" style="background: #fffbeb; color:#b45309;">Bekleyen</span>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Müşteri Adı</th>
-                                    <th scope="col">Rezervasyon Tarihi</th>
-                                    <th scope="col">Rezervasyon Saati</th>
-                                    <th scope="col">Kişi Sayısı</th>
-                                    <th scope="col">Rezervasyon Durumu</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                    <th scope="col">Onayla</th>
-                                    <th scope="col">İptal Et</th>
-                                    <th scope="col">Beklet</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.ReservationDate</td>
-                                        <td>@item.ReservationTime</td>
-                                        <td>@item.CountOfPeople</td>
-                                        <td>@item.ReservationStatus</td>
-                                        <td><a href="/Reservation/UpdateReservation/@item.ReservationId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Reservation/DeleteReservation/@item.ReservationId" class="btn btn-danger" />Sil</td>
-                                        <td><a href="/Reservation/AcceptReservation/@item.ReservationId" class="btn btn-info" />Onayla</td>
-                                        <td><a href="/Reservation/CancelReservation/@item.ReservationId" class="btn btn-dark" />İptal Et</td>
-                                        <td><a href="/Reservation/HoldReservation/@item.ReservationId" class="btn btn-warning" />Beklet</td>
-
-
-
-
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 20%;">Müşteri Adı</th>
+                                        <th style="width: 20%;">Tarih & Saat</th>
+                                        <th style="width: 10%;">Kişi</th>
+                                        <th style="width: 15%;">Durum</th>
+                                        <th style="width: 30%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        @foreach (var item in Model)
+                                        {
+                                            count++;
+                                            string statusClass = GetStatusClass(item.ReservationStatus);
+                                            string statusIcon = GetStatusIcon(item.ReservationStatus);
 
-                            </tbody>
-                        </table>
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <span style="font-weight: 700; color: #cbd5e1;">@count</span>
+                                                </td>
+                                                <td>
+                                                    <div style="display:flex; align-items:center; gap:10px;">
+                                                        <div style="width:36px; height:36px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#64748b;">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <span style="font-weight:600; color:var(--text-dark);">@item.NameSurname</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="date-box">
+                                                        <div class="date-main">
+                                                            <i class="far fa-calendar-alt" style="color: #0d9488;"></i>
+                                                            @(((DateTime)item.ReservationDate).ToString("dd MMM yyyy"))
+                                                        </div>
+                                                        <div class="date-sub">
+                                                            <i class="far fa-clock" style="font-size:0.8em; margin-right:4px;"></i>
+                                                            @item.ReservationTime
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style="display:flex; align-items:center; gap:6px; color:var(--text-dark); font-weight:600;">
+                                                        <i class="fas fa-users" style="color:#64748b; font-size:0.9em;"></i>
+                                                        @item.CountOfPeople
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="status-badge @statusClass">
+                                                        <i class="fas @statusIcon"></i>
+                                                        @item.ReservationStatus
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="action-toolbar">
+
+                                                        <a href="/Reservation/AcceptReservation/@item.ReservationId" class="btn-icon btn-approve" title="Onayla">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+
+                                                        <a href="/Reservation/HoldReservation/@item.ReservationId" class="btn-icon btn-hold" title="Beklemeye Al">
+                                                            <i class="fas fa-hourglass-half"></i>
+                                                        </a>
+
+                                                        <a href="/Reservation/CancelReservation/@item.ReservationId" class="btn-icon btn-cancel" title="İptal Et" onclick="return confirm('Rezervasyonu iptal etmek istiyor musunuz?');">
+                                                            <i class="fas fa-times"></i>
+                                                        </a>
+
+                                                        <div style="width:1px; background:var(--border-soft); margin:0 4px;"></div>
+
+                                                        <a href="/Reservation/UpdateReservation/@item.ReservationId" class="btn-icon btn-edit" title="Düzenle">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+
+                                                        <a href="/Reservation/DeleteReservation/@item.ReservationId" class="btn-icon btn-delete" title="Sil" onclick="return confirm('Kayıt tamamen silinecek. Emin misiniz?');">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-medium);">
+                                                <i class="far fa-calendar-times fa-3x" style="margin-bottom: 1rem; color: #cbd5e1;"></i>
+                                                <br />
+                                                Henüz bir rezervasyon kaydı bulunmuyor.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam Kayıt: <strong style="color: var(--text-dark);">@Model.Count</strong>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
+</div>

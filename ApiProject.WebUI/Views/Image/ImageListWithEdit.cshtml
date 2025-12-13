@@ -1,48 +1,308 @@
 ﻿@model List<ResultImageDto>
 @{
-    ViewData["Title"] = "ImageListWithEdit";
+    ViewData["Title"] = "Görsel Galerisi";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
+    // DTO'nuzda gerçek bir resim URL'si özelliği olduğunu varsayıyoruz (örn: item.ImageUrl).
+    // Eğer yoksa, demo amaçlı bu placeholder kullanılacak.
+    string placeholderBase = "https://placehold.co/400x400/e0e7ff/4f46e5?text=";
 }
 
-<section class="section">
-    <div class="section-body">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* === ORTAK TASARIM DEĞİŞKENLERİ === */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+        --indigo-primary: #4f46e5;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: white;
+        }
+
+    /* === GALERİ GRID TASARIMI === */
+
+    .gallery-grid {
+        display: grid;
+        /* Responsive Grid: Sığabildiği kadar 200px'lik kolonlar oluşturur */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    /* Galeri Kartı */
+    .gallery-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        border: 1px solid var(--border-soft);
+        transition: all 0.3s ease;
+        background: #fff;
+        /* Kare olması için aspect-ratio */
+        aspect-ratio: 1 / 1;
+    }
+
+        .gallery-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: var(--indigo-primary);
+        }
+
+    /* Görsel */
+    .gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Resmi bozmadan kareye doldur */
+        transition: transform 0.3s ease;
+    }
+
+    /* Başlık Bandı (Alt Kısım) */
+    .gallery-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); /* Karartma gradyanı */
+        color: white;
+        padding: 1rem 0.75rem 0.5rem 0.75rem;
+        pointer-events: none; /* Tıklamaları engelle */
+    }
+
+    .gallery-title-text {
+        font-weight: 600;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* Hover Overlay (Butonlar için katman) */
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(30, 41, 59, 0.7); /* Koyu yarı saydam arka plan */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        opacity: 0; /* Başlangıçta gizli */
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+
+    /* Hover Durumu */
+    .gallery-card:hover .gallery-overlay {
+        opacity: 1; /* Görünür yap */
+    }
+
+    .gallery-card:hover .gallery-img {
+        transform: scale(1.05); /* Resme hafif zoom */
+    }
+
+    .gallery-card:hover .gallery-caption {
+        opacity: 0; /* Hoverda başlığı gizle ki butonlar net görünsün */
+    }
+
+
+    /* Overlay Butonları */
+    .overlay-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: none !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        transform: translateY(20px); /* Aşağıdan yukarı efekt için */
+    }
+
+    .gallery-card:hover .overlay-btn {
+        transform: translateY(0); /* Yerine gelsin */
+    }
+
+    .btn-gallery-edit {
+        background-color: white;
+        color: var(--indigo-primary);
+    }
+
+        .btn-gallery-edit:hover {
+            background-color: var(--indigo-primary);
+            color: white;
+        }
+
+    .btn-gallery-delete {
+        background-color: white;
+        color: #dc2626;
+    }
+
+        .btn-gallery-delete:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+    /* Boş Durum İkonu */
+    .empty-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #e0e7ff;
+        color: var(--indigo-primary);
+    }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Görsel Listesi</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-photo-film" style="color: var(--indigo-primary);"></i>
+                                Görsel Galerisi
+                            </h4>
+                        </div>
+
+                        <a href="/Image/CreateImage/" class="btn-add-new">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Yeni Görsel Yükle</span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Görsel Başlığı</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+
+                    <div class="card-body p-0">
+
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            <div class="gallery-grid">
                                 @foreach (var item in Model)
                                 {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.Title</td>
-                                        <td><a href="/Image/UpdateImage/@item.ImageId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Image/DeleteImage/@item.ImageId" class="btn btn-danger" />Sil</td>
+                                    // *** ÖNEMLİ: Buradaki 'item.ImageUrl' kısmını kendi DTO'nuzdaki gerçek
+                                    // resim yolu özelliği ile değiştirin. Örn: item.ResimYolu vb. ***
+                                    // Eğer veri yoksa placeholder gösterir.
+                                    string imageUrl = !string.IsNullOrEmpty(item.ImageUrl) ? item.ImageUrl : $"{placeholderBase}{item.Title}";
 
-                                    </tr>
+                                    <div class="gallery-card">
+
+                                        @if (!string.IsNullOrEmpty(imageUrl))
+                                        {
+                                            <img src="@imageUrl" alt="@item.Title" class="gallery-img" loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            // Resim yolu yoksa gösterilecek ikon
+                                            <div class="empty-placeholder">
+                                                <i class="far fa-image fa-3x"></i>
+                                            </div>
+                                        }
+
+                                        <div class="gallery-caption">
+                                            <div class="gallery-title-text">@item.Title</div>
+                                        </div>
+
+                                        <div class="gallery-overlay">
+                                            <a href="/Image/UpdateImage/@item.ImageId" class="overlay-btn btn-gallery-edit" title="Düzenle">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            <a href="/Image/DeleteImage/@item.ImageId" class="overlay-btn btn-gallery-delete" title="Sil" onclick="return confirm('Bu görseli silmek istediğinize emin misiniz?');">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
                                 }
+                            </div>
+                        }
+                        else
+                        {
+                            // Hiç görsel yoksa gösterilecek alan
+                            <div style="text-align:center; padding: 4rem 2rem; color: var(--text-medium);">
+                                <div style="width: 80px; height: 80px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                                    <i class="fas fa-images fa-3x" style="color: var(--indigo-primary);"></i>
+                                </div>
+                                <h5 style="font-weight: 700; color: var(--text-dark);">Henüz Görsel Eklenmemiş</h5>
+                                <p>Galeriniz şu anda boş. Yeni bir görsel yükleyerek başlayın.</p>
+                            </div>
+                        }
 
-                            </tbody>
-                        </table>
-                        <a href="/Image/CreateImage/" class="btn btn-info">Yeni Görsel Ekle</a>
+                    </div>
+
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model?.Count</strong> görsel sergileniyor
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
+</div>

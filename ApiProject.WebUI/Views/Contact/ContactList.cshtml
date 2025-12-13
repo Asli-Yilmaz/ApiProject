@@ -1,50 +1,350 @@
 ﻿@model List<ResultContactDto>
 @{
-    ViewData["Title"] = "ContactList";
+    ViewData["Title"] = "İletişim & Harita";
     Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+
+    // Sayfa ilk açıldığında haritada gösterilecek varsayılan adres (Listenin ilki veya genel bir merkez)
+    var firstAddress = Model != null && Model.Any() ? Model.First().Address : "Istanbul, Turkey";
 }
-<section class="section">
-    <div class="section-body">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* === ORTAK TASARIM DEĞİŞKENLERİ === */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+        --theme-color: #0891b2; /* Cyan-600 */
+        --theme-light: #ecfeff; /* Cyan-50 */
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+        height: 100%; /* Kartların yüksekliğini eşitlemek için */
+    }
+
+    /* Header */
+    .card-header-custom {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Tablo Stilleri (Daha kompakt) */
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            cursor: pointer; /* Tıklanabilir olduğu belli olsun */
+        }
+
+            .soft-table tbody tr:hover {
+                background-color: var(--theme-light); /* Hoverda renk değişsin */
+                transform: translateX(4px);
+            }
+
+            .soft-table tbody tr td {
+                padding: 1rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 0.9rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-left: 3px solid transparent;
+                    border-top-left-radius: 8px;
+                    border-bottom-left-radius: 8px;
+                }
+
+            .soft-table tbody tr:hover td:first-child {
+                border-left-color: var(--theme-color);
+            }
+            /* Aktiflik çizgisi */
+            .soft-table tbody tr td:last-child {
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                border-right: 1px solid var(--border-soft);
+            }
+
+    /* Bilgi İkonları */
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .info-icon {
+        color: var(--theme-color);
+        font-size: 0.85rem;
+        margin-top: 3px;
+        width: 16px;
+    }
+
+    .info-text {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        word-break: break-word;
+    }
+
+    /* HTML Raw Alanı (Çalışma Saatleri) */
+    .html-content-box {
+        font-size: 0.85rem;
+        color: #475569;
+        background: #f8fafc;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px dashed var(--border-soft);
+    }
+
+        .html-content-box p {
+            margin: 0;
+        }
+    /* Gelen HTML p etiketi içeriyorsa margin sıfırlama */
+
+    /* Sağ Taraf - Harita Alanı */
+    .sticky-map-container {
+        position: sticky;
+        top: 20px; /* Sayfa kaydırılsa bile üstte kalır */
+        height: calc(100vh - 100px); /* Ekranı kaplasın */
+        min-height: 500px;
+    }
+
+    .map-frame {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        filter: grayscale(10%);
+        transition: filter 0.3s;
+    }
+
+        .map-frame:hover {
+            filter: grayscale(0%);
+        }
+
+    /* Butonlar */
+    .btn-icon-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        margin-right: 4px;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit {
+        background: #fff;
+        border-color: #e2e8f0;
+        color: #0ea5e9;
+    }
+
+        .btn-edit:hover {
+            background: #0ea5e9;
+            color: #fff;
+        }
+
+    .btn-delete {
+        background: #fff;
+        border-color: #e2e8f0;
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+    .btn-map-trigger {
+        background: var(--theme-light);
+        color: var(--theme-color);
+        border: 1px solid transparent;
+    }
+
+        .btn-map-trigger:hover {
+            background: var(--theme-color);
+            color: #fff;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>İletişim Bilgileri Listesi</h4>
+
+            <div class="col-lg-6 mb-4">
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4><i class="fas fa-address-book" style="color: var(--theme-color);"></i> İletişim Listesi</h4>
+                        </div>
+                        <a href="/Contact/CreateContact/" class="btn btn-sm btn-dark" style="border-radius:8px;">
+                            <i class="fas fa-plus"></i> Yeni
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Adres</th>
-                                    <th scope="col">Telefon</th>
-                                    <th scope="col">E-Mail</th>
-                                    <th scope="col">Çalışma Saatleri</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
+
+                    <div class="card-body p-3" style="overflow-y: auto; max-height: calc(100vh - 180px);">
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <td>@item.Address</td>
-                                        <td>@item.Phone</td>
-                                        <td>@item.Email</td>
-                                        <td>@item.OpenHours</td>
-                                        <td><a href="/Contact/UpdateContact/@item.ContactId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Contact/DeleteContact/@item.ContactId" class="btn btn-danger" />Sil</td>
-
+                                        <th>Lokasyon Bilgisi</th>
+                                        <th style="width: 100px;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr onclick="updateMap('@item.Address')">
+                                            <td>
+                                                <div class="info-row">
+                                                    <i class="fas fa-map-marker-alt info-icon"></i>
+                                                    <strong class="info-text">@item.Address</strong>
+                                                </div>
+                                                <div class="info-row">
+                                                    <i class="fas fa-phone info-icon"></i>
+                                                    <span class="info-text">@item.Phone</span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <i class="fas fa-envelope info-icon"></i>
+                                                    <span class="info-text">@item.Email</span>
+                                                </div>
 
-                            </tbody>
-                        </table>
-                        <a href="/Contact/CreateContact/" class="btn btn-info">Yeni İletişim Bilgisi Ekle</a>
+                                                <div class="mt-2">
+                                                    <small class="text-muted" style="font-size: 0.75rem; font-weight: 600;">ÇALIŞMA SAATLERİ:</small>
+                                                    <div class="html-content-box mt-1">
+                                                        @Html.Raw(item.OpenHours)
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div style="display:flex; justify-content:center;">
+                                                    <button class="btn-icon-sm btn-map-trigger" title="Haritada Göster">
+                                                        <i class="fas fa-crosshairs"></i>
+                                                    </button>
+
+                                                    <a href="/Contact/UpdateContact/@item.ContactId" class="btn-icon-sm btn-edit" title="Düzenle">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a href="/Contact/DeleteContact/@item.ContactId" class="btn-icon-sm btn-delete" title="Sil" onclick="event.stopPropagation(); return confirm('Silmek istediğinize emin misiniz?');">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="text-center p-5 text-muted">
+                                <i class="fas fa-map-signs fa-3x mb-3" style="opacity:0.3"></i>
+                                <p>Henüz kayıtlı iletişim bilgisi yok.</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="glass-card sticky-map-container">
+                    <div class="card-header-custom bg-light">
+                        <div class="title-group">
+                            <h4><i class="fas fa-map" style="color: var(--theme-color);"></i> Canlı Harita Önizleme</h4>
+                        </div>
+                        <small class="text-muted"><i class="fas fa-info-circle"></i> Listeden bir adrese tıklayın.</small>
+                    </div>
+
+                    <div style="height: 100%; width: 100%; background: #e2e8f0; position: relative;">
+                        <iframe id="google-map-iframe"
+                                class="map-frame"
+                                src="https://maps.google.com/maps?q=@System.Web.HttpUtility.UrlEncode(firstAddress)&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                                allowfullscreen
+                                loading="lazy">
+                        </iframe>
+
+                        <div id="map-loader" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; align-items:center; justify-content:center;">
+                            <div class="spinner-border text-info" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-</section>
+</div>
 
+<script>
+    function updateMap(address) {
+        // Adres boşsa işlem yapma
+        if (!address) return;
 
+        // Yükleniyor simgesini göster (Opsiyonel görsel güzellik için)
+        var loader = document.getElementById('map-loader');
+        var iframe = document.getElementById('google-map-iframe');
+
+        if (loader) loader.style.display = "flex";
+
+        // Google Maps Embed URL oluşturma
+        // encodeURIComponent: Adresteki boşluk ve özel karakterleri URL formatına çevirir.
+        var embedUrl = "https://maps.google.com/maps?q=" + encodeURIComponent(address) + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
+
+        iframe.src = embedUrl;
+
+        // Iframe yüklendiğinde loader'ı gizle
+        iframe.onload = function () {
+            if (loader) loader.style.display = "none";
+        };
+    }
+</script>

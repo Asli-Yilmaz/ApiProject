@@ -1,51 +1,339 @@
 ﻿@model List<ResultTestimonialDto>
 @{
-    ViewData["Title"] = "TestimonialList";
+    ViewData["Title"] = "Müşteri Yorumları";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
 }
-<section class="section">
-    <div class="section-body">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* === ORTAK TASARIM DEĞİŞKENLERİ === */
+    :root {
+        --bg-body: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-medium: #64748b;
+        --border-soft: #e2e8f0;
+    }
+
+    .main-area {
+        background-color: var(--bg-body);
+        padding: 2rem;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+    }
+
+    /* Header Alanı */
+    .card-header-custom {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-soft);
+        background: #fff;
+    }
+
+    .title-group h4 {
+        color: var(--text-dark);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Yeni Ekle Butonu */
+    .btn-add-new {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            color: white;
+        }
+
+    /* Tablo Yapısı */
+    .table-responsive {
+        padding: 1rem;
+    }
+
+    .soft-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .soft-table thead th {
+            background-color: #f8fafc;
+            color: var(--text-medium);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-soft);
+        }
+
+            .soft-table thead th:first-child {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .soft-table thead th:last-child {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+        .soft-table tbody tr {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+            .soft-table tbody tr:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+            }
+
+            .soft-table tbody tr td {
+                padding: 1.25rem 1.5rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-soft);
+                border-bottom: 1px solid var(--border-soft);
+                color: var(--text-dark);
+                font-size: 1rem;
+            }
+
+                .soft-table tbody tr td:first-child {
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-left: 4px solid transparent;
+                }
+
+                .soft-table tbody tr td:last-child {
+                    border-top-right-radius: 12px;
+                    border-bottom-right-radius: 12px;
+                    border-right: 1px solid var(--border-soft);
+                }
+
+    /* === MÜŞTERİ YORUMLARI İÇİN ÖZEL STİLLER (Turuncu Tema) === */
+
+    /* Kullanıcı Avatar Kutusu */
+    .user-avatar-box {
+        width: 48px;
+        height: 48px;
+        background-color: #fff7ed; /* Açık Turuncu */
+        color: #f59e0b; /* Koyu Turuncu/Amber */
+        border-radius: 50%; /* Yuvarlak */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border: 1px solid #ffedd5;
+        flex-shrink: 0;
+    }
+
+    /* Kullanıcı Bilgi Alanı */
+    .user-info-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-name {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .user-title {
+        color: var(--text-medium);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Yorum Metni */
+    .comment-text {
+        color: #475569;
+        font-size: 0.95rem;
+        max-width: 450px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .quote-icon {
+        color: #cbd5e1;
+        margin-right: 8px;
+        font-size: 0.9rem;
+    }
+
+    /* Aksiyon Butonları */
+    .action-btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit {
+        background-color: #eff6ff;
+        color: #1e40af;
+        border-color: #bfdbfe;
+    }
+
+        .btn-edit:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+</style>
+
+<div class="main-area">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Müşteri Yorumları Listesi</h4>
+            <div class="col-12">
+
+                <div class="glass-card">
+                    <div class="card-header-custom">
+                        <div class="title-group">
+                            <h4>
+                                <i class="fas fa-comments" style="color: #f59e0b;"></i>
+                                Müşteri Yorumları
+                            </h4>
+                            <div style="color: var(--text-medium); font-size: 0.95rem; margin-top: 4px;">
+                                Müşteri deneyimleri ve geri bildirim yönetimi
+                            </div>
+                        </div>
+
+                        <a href="/Testimonial/CreateTestimonial/" class="btn-add-new">
+                            <i class="fas fa-plus"></i>
+                            <span>Yeni Yorum Ekle</span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Müşteri Adı Soyadı</th>
-                                    <th scope="col">Müşteri Unvanı</th>
-                                    <th scope="col">Yorumu</th>
-                                    <th scope="col">Güncelle</th>
-                                    <th scope="col">Sil</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="soft-table">
+                                <thead>
                                     <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.Title</td>
-                                        <td>@item.Comment</td>
-                                        <td><a href="/Testimonial/UpdateTestimonial/@item.TestimonialId" class="btn btn-success" />Güncelle</td>
-                                        <td><a href="/Testimonial/DeleteTestimonial/@item.TestimonialId" class="btn btn-danger" />Sil</td>
-
+                                        <th style="width: 5%; text-align:center;">#</th>
+                                        <th style="width: 35%;">Müşteri Bilgisi</th>
+                                        <th style="width: 45%;">Yapılan Yorum</th>
+                                        <th style="width: 15%; text-align: center;">İşlemler</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        @foreach (var item in Model)
+                                        {
+                                            count++;
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <span style="font-weight: 700; color: #cbd5e1; font-size: 1.1rem;">@count</span>
+                                                </td>
+                                                <td>
+                                                    <div class="user-info-group">
+                                                        <div class="user-avatar-box">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="user-name">@item.NameSurname</div>
+                                                            <div class="user-title">@item.Title</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="comment-text" title="@item.Comment">
+                                                        <i class="fas fa-quote-left quote-icon"></i>
+                                                        @item.Comment
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="action-btn-group">
+                                                        <a href="/Testimonial/UpdateTestimonial/@item.TestimonialId" class="btn-action btn-edit" title="Güncelle">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a href="/Testimonial/DeleteTestimonial/@item.TestimonialId" class="btn-action btn-delete" title="Sil" onclick="return confirm('Bu yorumu silmek istediğinize emin misiniz?');">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4" style="text-align:center; padding: 3rem; color: var(--text-medium);">
+                                                <i class="far fa-comment-dots fa-3x" style="margin-bottom: 1rem; color: #cbd5e1;"></i>
+                                                <br />
+                                                Henüz herhangi bir müşteri yorumu eklenmemiş.
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                            </tbody>
-                        </table>
-                        <a href="/Testimonial/CreateTestimonial/" class="btn btn-info">Yeni Müşteri Yorumu Ekle</a>
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid var(--border-soft); padding: 1.25rem 2rem;">
+                        <div style="color: var(--text-medium); font-weight: 500;">
+                            Toplam <strong style="color: var(--text-dark);">@Model.Count</strong> yorum listeleniyor
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-</section>
-
+</div>
