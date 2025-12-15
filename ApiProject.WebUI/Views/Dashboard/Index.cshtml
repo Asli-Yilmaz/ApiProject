@@ -4,8 +4,8 @@
 }
 
 <section class="section">
-    @await Component.InvokeAsync("_DashboardWidgetsComponentPartial");
-    @await Component.InvokeAsync("_DashboardMainChartComponentPartial");
+    @await Component.InvokeAsync("_DashboardWidgetsComponentPartial")
+    @await Component.InvokeAsync("_DashboardMainChartComponentPartial")
 
     
     <div class="row">
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    @await Component.InvokeAsync("_DashboardGroupReservationComponentPartial");
+    @await Component.InvokeAsync("_DashboardGroupReservationComponentPartial")
 
     <div class="row">
         @await Component.InvokeAsync("_DashboardAIDailyMenuSuggestionComponentPartial")

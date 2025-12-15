@@ -1,5 +1,5 @@
 ﻿@using ApiProject.WebUI.Dtos.ReservationDtos
-﻿@using Newtonsoft.Json
+@using Newtonsoft.Json
 @model List<ReservationChartDto>
 
 <div class="card">
@@ -11,7 +11,9 @@
     </div>
 
     <div class="card-body">
-        <canvas id="reservationChart" height="100"></canvas>
+        <div style="position: relative; height: 350px; width: 100%;">
+            <canvas id="reservationChart"></canvas>
+        </div>
     </div>
 </div>
 
@@ -56,6 +58,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false, // DÜZELTME 2: Bu ayar grafiğin sıkışmasını önler
             plugins: {
                 legend: { display: true }
             },
